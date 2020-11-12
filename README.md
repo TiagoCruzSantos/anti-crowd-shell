@@ -1,1 +1,3 @@
-# anti-crowd-shell
+# Anti-Crowd Shell
+
+Trabalho avaliativo de Sistemas Operacionais
