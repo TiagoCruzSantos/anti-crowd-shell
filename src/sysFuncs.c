@@ -16,7 +16,19 @@ void backgroundProcesses(char** commands){
 }
 
 void foregroundProcess(char* commands){
-
+    pid_t pid = fork();
+    int status;
+    if(pid < 0){
+        printf("Não foi possível criar um novo processo\n");
+        return;
+    }
+    char** cmd = formatForeground(commands);
+    if(pid == 0){
+        execlp(cmd[0], cmd[1], cmd[2], cmd[3]);
+    }else{
+        waitpid(pid, &status, WUNTRACED);
+        freeStringVec(cmd, 4);
+    }
 }
 
 void internalCommand(char** command){

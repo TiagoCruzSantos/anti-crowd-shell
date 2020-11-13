@@ -13,9 +13,9 @@ void trimLeft(char* line){
             line[i] = line[i+1];
         }
     }
-};
+}
 
-char *multi_tok(char *input, char *delimiter) {
+char *multi_tok(char *input, const char *delimiter) {
     static char *string;
     if (input != NULL)
         string = input;
@@ -37,12 +37,37 @@ char *multi_tok(char *input, char *delimiter) {
     return temp;
 }
 
+char** formatForeground(char* input){
+    char* inp2 = malloc(sizeof(char)*(strlen(input) + 1));
+    strcpy(inp2, input);
+    char* temp = inp2;
+    char* token;
+    char** commands = malloc(sizeof(char*)*4);
+    for(int i = 0; i < 4; i++){
+        token = multi_tok(temp, " ");
+        temp = NULL;
+        if(token == NULL || token[0] == '%'){
+            commands[i] = NULL;
+            break;
+        }
+        if(token[strlen(token) - 1] == '\n'){
+            token[strlen(token) - 1] = '\0';
+        }
+        trimLeft(token);
+        trimRight(token);
+        commands[i] = malloc(sizeof(char)*(strlen(token) + 1));
+        strcpy(commands[i], token);
+    }
+    free(inp2);
+    return commands;
+}
+
 char** divideExtCmds(char* input){
     char* inp2 = malloc(sizeof(char)*(strlen(input) + 1));
     strcpy(inp2, input);
     char* temp = inp2;
     char* token;
-    char** commands = malloc(sizeof(char**)*5);
+    char** commands = malloc(sizeof(char*)*5);
     for(int i = 0; i < 5; i++){
         token = multi_tok(temp, "<3");
         temp = NULL;
@@ -67,7 +92,7 @@ char** divideCmd(char* input){
     strcpy(inp2, input);
     char* temp = inp2;
     char* token;
-    char** command = malloc(sizeof(char**)*5);
+    char** command = malloc(sizeof(char*)*2);
     for(int i = 0; i < 2; i++){
         token = multi_tok(temp, " ");
         temp = NULL;
