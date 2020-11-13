@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include "include/utils.h"
 #include "include/signalManipulation.h"
 #include "include/sysFuncs.h"
@@ -16,7 +18,6 @@ int main(int argc, char** argv){
         char** cmd = divideCmd(line);
         if(isInternal(cmd[0])){
             internalCommand(cmd);
-            printf("roda comando interno %s\n", cmd[0]);
             continue;
         }
         freeStringVec(cmd, 2);
