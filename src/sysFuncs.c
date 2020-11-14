@@ -24,20 +24,21 @@ void foregroundProcess(char* commands){
     }
     char** cmd = formatForeground(commands);
     if(pid == 0){
-        execlp(cmd[0], cmd[1], cmd[2], cmd[3]);
+        if(execlp(cmd[0], cmd[0] ,cmd[1], cmd[2], cmd[3]) < 0){
+            perror("Não foi possivel rodar o programa");
+        }
+        exit(1);
     }else{
         waitpid(pid, &status, WUNTRACED);
         freeStringVec(cmd, 4);
     }
 }
-
 void internalCommand(char** command){
     if(strcmp(command[0], internal[0]) == 0){
         if(chdir(command[1]) < 0){
-            printf("Não foi possível mudar de diretório\n");
+            perror("Não foi possível mudar de diretório");
         }
     }else if(strcmp(command[0], internal[1]) == 0){
         // codigo de saida da shell
     }
-    printf("\n");
 }
