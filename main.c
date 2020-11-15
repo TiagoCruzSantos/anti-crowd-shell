@@ -34,6 +34,7 @@ int main(){
         }
         line[strlen(line) - 1] = '\0';
         if(strlen(line) == 0){
+            free(line);
             continue;
         }
         trimLeft(line);

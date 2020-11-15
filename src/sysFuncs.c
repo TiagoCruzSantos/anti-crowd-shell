@@ -24,7 +24,7 @@ void foregroundProcess(char* commands){
     }
     char** cmd = formatForeground(commands);
     if(pid == 0){
-        if(execlp(cmd[0], cmd[0] ,cmd[1], cmd[2], cmd[3]) < 0){
+        if(execlp(cmd[0], cmd[0] ,cmd[1], cmd[2], cmd[3], NULL) < 0){
             perror("Não foi possivel rodar o programa");
         }
         exit(1);
