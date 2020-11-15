@@ -6,7 +6,7 @@ EXE 	 := acsh.out
 PROJETO  := main
 
 # Cria objetos de todos os arquivos de código-fonte para então linká-los no programa final
-main: clean $(OBJ)/utils.o $(OBJ)/signalManipulation.o $(OBJ)/sysFuncs.o $(OBJ)/$(PROJETO).o
+main: $(OBJ)/utils.o $(OBJ)/signalManipulation.o $(OBJ)/sysFuncs.o $(OBJ)/$(PROJETO).o
 	gcc $(OBJ)/*.o -o $(EXE) $(CFLAGS)
 
 $(OBJ)/signalManipulation.o: $(SRC)/signalManipulation.c $(INC)/signalManipulation.h
