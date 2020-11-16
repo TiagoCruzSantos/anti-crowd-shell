@@ -2,6 +2,8 @@
 
 const char* internal[] = {"cd", "exit"};
 
+void nothing(int i){printf("\n");};
+
 int isInternal(char* line){
     for(int i = 0; i < 2; i++){
         if(strcmp(line, internal[i]) == 0){
@@ -19,7 +21,7 @@ void foregroundProcess(char* commands){
     pid_t pid = fork();
     int status;
     if(pid < 0){
-        printf("Não foi possível criar um novo processo\n");
+        perror("Não foi possível criar um novo processo");
         return;
     }
     char** cmd = formatForeground(commands);
@@ -29,7 +31,9 @@ void foregroundProcess(char* commands){
         }
         exit(1);
     }else{
+        setHandler(nothing);
         waitpid(pid, &status, WUNTRACED);
+        setHandler(handleSignal);
         freeStringVec(cmd, 4);
     }
 }

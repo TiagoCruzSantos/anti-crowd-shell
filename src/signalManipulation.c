@@ -13,3 +13,14 @@ void handleSignal(int i){
             break;
     }
 }
+
+void setHandler(void (*handler)(int)){
+    struct sigaction signals_handler = {.sa_handler = handler};
+    sigemptyset(&signals_handler.sa_mask);
+    sigaddset(&signals_handler.sa_mask, SIGINT);
+    sigaddset(&signals_handler.sa_mask, SIGQUIT);
+    sigaddset(&signals_handler.sa_mask, SIGTSTP);
+    sigaction(SIGINT, &signals_handler, NULL);
+    sigaction(SIGQUIT, &signals_handler, NULL);
+    sigaction(SIGTSTP, &signals_handler, NULL);
+}

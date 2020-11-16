@@ -3,5 +3,6 @@
 #include <signal.h>
 #include <stdio.h>
 void handleSignal(int i);
+void setHandler(void (*handler)(int));
 
 #endif
