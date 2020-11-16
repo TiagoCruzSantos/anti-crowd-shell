@@ -33,7 +33,7 @@ void foregroundProcess(char* commands){
     }else{
         setHandler(nothing);
         waitpid(pid, &status, WUNTRACED);
-        //setHandler(handleSignal);
+        setHandler(handleSignal);
         freeStringVec(cmd, 4);
     }
 }
