@@ -13,27 +13,48 @@ int isInternal(char* line){
 
 void backgroundProcesses(char** commands){
     int pidM = fork();
+
     if(pidM == 0){
-        setsid();
+        //setsid();
+        struct sigaction chlTerm;
+        chlTerm.sa_handler = SIG_DFL;
+        chlTerm.sa_flags = SA_RESETHAND;
+        sigemptyset(&chlTerm.sa_mask);
+        sigaction(SIGCHLD, &chlTerm, NULL);
         int pids[5] = {-1, -1, -1, -1, -1};
         for(int i = 0; i < 5 && commands[i] != NULL; i++){
             char** cmd = formatCmd(commands[i]);
             pids[i] = fork();
             if(pids[i] == 0){
+                if(commands[1] == NULL){
+                    struct sigaction sigusrIgn;
+                    sigusrIgn.sa_handler = SIG_IGN;
+                    sigemptyset(&sigusrIgn.sa_mask);
+                    sigaction(SIGUSR1, &sigusrIgn, NULL);
+                }
                 if(execlp(cmd[0], cmd[0] ,cmd[1], cmd[2], cmd[3], NULL) < 0){
                     perror("Não foi possivel rodar o programa");
                 }
                 exit(1);
             }else if(pids[i] > 0){
-                freeStringVec(cmd, 4);
+            }else{
+                perror("Não foi possível criar novo processo");
             }
         }
         int status;
-        while(waitpid(-1, &status, WNOHANG) > 0){
-            if(WIFSIGNALED(status)){
+        int sigAct = 0;
+        int pid;
+        while((pid = waitpid(-1, &status, 0)) != -1){
+            if(pid > 0 && WIFSIGNALED(status)){
                 if(WTERMSIG(status) == SIGUSR1){
-                    killpg(0, SIGUSR1);
+                    sigAct = 1;
+                    break;
                 }
+            }
+        }
+        if(sigAct){
+            for(int i = 0; i < 5 && pids[i] != -1; i++){
+                kill(pids[i], SIGUSR1);
             }
         }
         exit(0);
@@ -54,7 +75,13 @@ void foregroundProcess(char* commands){
         exit(1);
     }else{
         setHandler(SIG_IGN);
+        struct sigaction chlTerm;
+        chlTerm.sa_handler = SIG_DFL;
+        sigemptyset(&chlTerm.sa_mask);
+        sigaction(SIGCHLD, &chlTerm, NULL);
         waitpid(pid, NULL, 0);
+        chlTerm.sa_handler = chldTerm;
+        sigaction(SIGCHLD, &chlTerm, NULL);
         setHandler(handleSignal);
         freeStringVec(cmd, 4);
     }

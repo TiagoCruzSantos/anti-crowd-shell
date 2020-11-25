@@ -6,24 +6,27 @@
 #include "include/signalManipulation.h"
 #include "include/sysFuncs.h"
 
-// void sigchl(int i){
-//     printf("crianza moree\n");
-// }
 
 int main(){
     setHandler(handleSignal);
+    struct sigaction chlTerm;
+    chlTerm.sa_handler = chldTerm;
+    sigemptyset(&chlTerm.sa_mask);
+    sigaction(SIGCHLD, &chlTerm, NULL);
     while(1){
         printf("acsh>");
         char* line = NULL;
         size_t n = 0;
         getline(&line, &n, stdin);
         if(line == NULL){
+            clearerr(stdin);
             rewind(stdin);
-            getline(&line, &n, stdin);
+            continue;
         }
         line[strlen(line) - 1] = '\0';
         if(strlen(line) == 0){
             free(line);
+            clearerr(stdin);
             continue;
         }
         trimLeft(line);

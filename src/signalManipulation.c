@@ -1,5 +1,9 @@
 #include "../include/signalManipulation.h"
 
+void chldTerm(int i){
+    waitpid(-1, NULL, WNOHANG);
+}
+
 void handleSignal(int i){
     switch(i){
         case SIGINT:
