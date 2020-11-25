@@ -15,7 +15,7 @@ void backgroundProcesses(char** commands){
     int pidM = fork();
 
     if(pidM == 0){
-        //setsid();
+        setsid();
         struct sigaction chlTerm;
         chlTerm.sa_handler = SIG_DFL;
         chlTerm.sa_flags = SA_RESETHAND;
@@ -44,7 +44,7 @@ void backgroundProcesses(char** commands){
         int status;
         int sigAct = 0;
         int pid;
-        while((pid = waitpid(-1, &status, 0)) != -1){
+        while((pid = waitpid(-1, &status, WNOHANG)) != -1){
             if(pid > 0 && WIFSIGNALED(status)){
                 if(WTERMSIG(status) == SIGUSR1){
                     sigAct = 1;
