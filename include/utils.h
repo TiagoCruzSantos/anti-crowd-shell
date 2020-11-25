@@ -5,7 +5,7 @@
 
 char** divideExtCmds(char* input);
 char** divideCmd(char* input);
-char** formatForeground(char* input);
+char** formatCmd(char* input);
 void freeStringVec(char** vec, int size);
 void trimLeft(char* line);
 void trimRight(char* line);

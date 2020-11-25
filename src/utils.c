@@ -37,7 +37,7 @@ char *multi_tok(char *input, const char *delimiter) {
     return temp;
 }
 
-char** formatForeground(char* input){
+char** formatCmd(char* input){
     char* inp2 = malloc(sizeof(char)*(strlen(input) + 1));
     strcpy(inp2, input);
     char* temp = inp2;

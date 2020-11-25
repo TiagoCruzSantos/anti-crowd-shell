@@ -40,7 +40,7 @@ int main(){
         if(cmd[0][strlen(cmd[0]) - 1] == '%'){
             foregroundProcess(cmd[0]);
         }else{
-            printf("background\n");
+            //printf("background\n");
             backgroundProcesses(cmd);
         }
         // for(int i = 0; i < 5 && cmd[i] != NULL; i++){
