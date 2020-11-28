@@ -3,7 +3,9 @@
 int acshExit;
 
 void acshExited(int i){
-    acshExit = 1;
+    if(i == SIGUSR2){
+        acshExit = 1;
+    }
 }
 
 const char* internal[] = {"cd", "exit"};

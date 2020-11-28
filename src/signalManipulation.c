@@ -1,8 +1,10 @@
 #include "../include/signalManipulation.h"
 
 void chldTerm(int i){
-    waitpid(-1, NULL, WNOHANG);
-    childExited = 1;
+    if(i == SIGCHLD){
+        waitpid(-1, NULL, WNOHANG);
+        childExited = 1;
+    }
 }
 
 void handleSignal(int i){
