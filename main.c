@@ -11,25 +11,23 @@ int main(){
     childExited = 0;
     setHandler(handleSignal);
     struct sigaction chlTerm;
-    chlTerm.sa_handler = chldTerm;
+    chlTerm.sa_handler = chldTerm; // Adiciona tratador para esperar um filho que tenha acabado
     sigemptyset(&chlTerm.sa_mask);
     sigaction(SIGCHLD, &chlTerm, NULL);
     TipoLista* ListaProcessos = CriaLista();
     char* line = NULL;
     while(1){
-        //printf("%p\n", ListaProcessos);
-        //ImprimeLista(ListaProcessos);
         int getlineRes = 0;
         size_t n = 0;
         line = NULL;
         while(getlineRes <= 1){
-            if(!childExited){
+            if(!childExited){ // Evita printar acsh> mais uma vez caso um filho em background tenha terminado
                 printf("acsh>");
             }else{
                 childExited = 0;
             }
             getlineRes = getline(&line, &n, stdin);
-            if(getlineRes == -1){
+            if(getlineRes == -1){ // Limpa indicadores do stdin após um sinal recebido
                 clearerr(stdin);
             }
         }
@@ -43,18 +41,12 @@ int main(){
         }
         freeStringVec(cmd, 2);
         cmd = divideExtCmds(line);
-        // printf("%s\n", getcwd(s, 100));
         if(cmd[0][strlen(cmd[0]) - 1] == '%'){
             foregroundProcess(cmd[0]);
         }else{
-            //printf("background\n");
             backgroundProcesses(cmd, ListaProcessos);
         }
         free(line);
-        //printf("");
-        // for(int i = 0; i < 5 && cmd[i] != NULL; i++){
-        //     printf("-%s-\n", cmd[i]);
-        // }
     }
 
     return 0;

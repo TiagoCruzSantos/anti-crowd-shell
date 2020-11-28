@@ -24,7 +24,7 @@ void backgroundProcesses(char** commands, TipoLista* procs){
         LiberaLista(procs);
         acshExit = 0;
         setsid();
-        struct sigaction chlTerm;
+        struct sigaction chlTerm; // Retira o tratador de SIGCHLD
         chlTerm.sa_handler = SIG_DFL;
         chlTerm.sa_flags = SA_RESETHAND;
         sigemptyset(&chlTerm.sa_mask);
@@ -34,7 +34,7 @@ void backgroundProcesses(char** commands, TipoLista* procs){
             char** cmd = formatCmd(commands[i]);
             pids[i] = fork();
             if(pids[i] == 0){
-                if(commands[1] == NULL){
+                if(commands[1] == NULL){ // Ignora SIGUSR1 caso seja o único processo
                     struct sigaction sigusrIgn;
                     sigusrIgn.sa_handler = SIG_IGN;
                     sigemptyset(&sigusrIgn.sa_mask);
@@ -49,15 +49,15 @@ void backgroundProcesses(char** commands, TipoLista* procs){
                 perror("Não foi possível criar novo processo");
             }
         }
-        struct sigaction acshTerm;
+        struct sigaction acshTerm; // Adiciona tartador para o sinal SIGUSR2 que sera enviado pelo acsh após um exit
         acshTerm.sa_handler = acshExited;
         sigemptyset(&acshTerm.sa_mask);
         sigaction(SIGUSR2, &acshTerm, NULL);
         int status;
         int sigAct = 0;
         int pid;
-        while((pid = waitpid(-1, &status, WNOHANG)) != -1){
-            if(acshExit){
+        while((pid = waitpid(-1, &status, WNOHANG)) != -1){ // Espera por todos os filhos
+            if(acshExit){ // Caso o acsh tenha executado exit
                 break;
             }
             if(pid > 0 && WIFSIGNALED(status)){
@@ -68,7 +68,7 @@ void backgroundProcesses(char** commands, TipoLista* procs){
             }
         }
         if(acshExit){
-            for(int i = 0; i < 5 && pids[i] != -1; i++){
+            for(int i = 0; i < 5 && pids[i] != -1; i++){ // Mata todos os filhos caso acsh tenha dado exit
                 kill(pids[i], SIGTERM);
             }
         }
@@ -96,15 +96,15 @@ void foregroundProcess(char* commands){
         }
         exit(1);
     }else{
-        setHandler(SIG_IGN);
+        setHandler(SIG_IGN); // Ignora os sinais SIGINT, SIGQUIT e SIGTSTP enquanto o processo em foreground estiver ativo
         struct sigaction chlTerm;
         chlTerm.sa_handler = SIG_DFL;
         sigemptyset(&chlTerm.sa_mask);
         sigaction(SIGCHLD, &chlTerm, NULL);
         waitpid(pid, NULL, 0);
+        setHandler(handleSignal); // Retorna com a mensagem a ser printada caso SIGINT, SIGQUIT e SIGTSTP
         chlTerm.sa_handler = chldTerm;
         sigaction(SIGCHLD, &chlTerm, NULL);
-        setHandler(handleSignal);
         freeStringVec(cmd, 4);
     }
 }
