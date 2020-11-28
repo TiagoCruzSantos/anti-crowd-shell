@@ -1,5 +1,11 @@
 #include "../include/sysFuncs.h"
 
+int acshExit;
+
+void acshExited(int i){
+    acshExit = 1;
+}
+
 const char* internal[] = {"cd", "exit"};
 
 int isInternal(char* line){
@@ -11,10 +17,12 @@ int isInternal(char* line){
     return 0;
 }
 
-void backgroundProcesses(char** commands){
+void backgroundProcesses(char** commands, TipoLista* procs){
     int pidM = fork();
 
     if(pidM == 0){
+        LiberaLista(procs);
+        acshExit = 0;
         setsid();
         struct sigaction chlTerm;
         chlTerm.sa_handler = SIG_DFL;
@@ -41,15 +49,27 @@ void backgroundProcesses(char** commands){
                 perror("Não foi possível criar novo processo");
             }
         }
+        struct sigaction acshTerm;
+        acshTerm.sa_handler = acshExited;
+        sigemptyset(&acshTerm.sa_mask);
+        sigaction(SIGUSR2, &acshTerm, NULL);
         int status;
         int sigAct = 0;
         int pid;
         while((pid = waitpid(-1, &status, WNOHANG)) != -1){
+            if(acshExit){
+                break;
+            }
             if(pid > 0 && WIFSIGNALED(status)){
                 if(WTERMSIG(status) == SIGUSR1){
                     sigAct = 1;
                     break;
                 }
+            }
+        }
+        if(acshExit){
+            for(int i = 0; i < 5 && pids[i] != -1; i++){
+                kill(pids[i], SIGTERM);
             }
         }
         if(sigAct){
@@ -58,6 +78,8 @@ void backgroundProcesses(char** commands){
             }
         }
         exit(0);
+    }else if(pidM > 0){
+        Insere(pidM, procs);
     }
 }
 
@@ -86,12 +108,15 @@ void foregroundProcess(char* commands){
         freeStringVec(cmd, 4);
     }
 }
-void internalCommand(char** command){
+void internalCommand(char** command, TipoLista* listaDeProcessos){
     if(strcmp(command[0], internal[0]) == 0){
         if(chdir(command[1]) < 0){
             perror("Não foi possível mudar de diretório");
         }
     }else if(strcmp(command[0], internal[1]) == 0){
-        // codigo de saida da shell
+        while(!Vazia(listaDeProcessos)){
+            kill(RetiraPrimeiro(listaDeProcessos), SIGUSR2);
+        }
+        exit(0);
     }
 }

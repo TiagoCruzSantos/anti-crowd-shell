@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <sys/wait.h>
 
+int childExited;
+
 void chldTerm(int i);
 void handleSignal(int i);
 void setHandler(void (*handler)(int));

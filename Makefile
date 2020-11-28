@@ -6,7 +6,7 @@ EXE 	 := acsh.out
 PROJETO  := main
 
 # Cria objetos de todos os arquivos de código-fonte para então linká-los no programa final
-main: $(OBJ)/utils.o $(OBJ)/signalManipulation.o $(OBJ)/sysFuncs.o $(OBJ)/$(PROJETO).o
+main: $(OBJ)/listaencad.o $(OBJ)/utils.o $(OBJ)/signalManipulation.o $(OBJ)/sysFuncs.o $(OBJ)/$(PROJETO).o
 	gcc $(OBJ)/*.o -o $(EXE) $(CFLAGS)
 
 $(OBJ)/signalManipulation.o: $(SRC)/signalManipulation.c $(INC)/signalManipulation.h
@@ -14,6 +14,9 @@ $(OBJ)/signalManipulation.o: $(SRC)/signalManipulation.c $(INC)/signalManipulati
 
 $(OBJ)/sysFuncs.o: $(SRC)/sysFuncs.c $(INC)/sysFuncs.h
 	gcc -c $(CFLAGS) "$(SRC)/sysFuncs.c" -o "$(OBJ)/sysFuncs.o"
+
+$(OBJ)/listaencad.o: $(SRC)/listaencad.c $(INC)/listaencad.h
+	gcc -c $(CFLAGS) "$(SRC)/listaencad.c" -o "$(OBJ)/listaencad.o"
 
 $(OBJ)/utils.o: $(SRC)/utils.c $(INC)/utils.h
 	gcc -c $(CFLAGS) "$(SRC)/utils.c" -o "$(OBJ)/utils.o"
