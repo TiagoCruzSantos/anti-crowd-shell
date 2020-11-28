@@ -1,3 +1,7 @@
+# Integrantes
+# Tiago da Cruz Santos
+# Ezequiel Schneider Reinholtz
+# Vitor Ferraz Matos Brunoro
 OBJ      := obj
 SRC      := src
 INC      := include
