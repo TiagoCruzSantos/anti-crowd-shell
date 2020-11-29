@@ -42,7 +42,8 @@ char** formatCmd(char* input){
     strcpy(inp2, input);
     char* temp = inp2;
     char* token;
-    char** commands = malloc(sizeof(char*)*4);
+    // char** commands = malloc(sizeof(char*)*4);
+    char** commands = calloc(4, sizeof(char*));
     for(int i = 0; i < 4; i++){
         token = multi_tok(temp, " ");
         temp = NULL;
@@ -67,7 +68,8 @@ char** divideExtCmds(char* input){
     strcpy(inp2, input);
     char* temp = inp2;
     char* token;
-    char** commands = malloc(sizeof(char*)*5);
+    //char** commands = malloc(sizeof(char*)*5);
+    char** commands = calloc(5, sizeof(char*));
     for(int i = 0; i < 5; i++){
         token = multi_tok(temp, "<3");
         temp = NULL;
@@ -92,7 +94,8 @@ char** divideCmd(char* input){
     strcpy(inp2, input);
     char* temp = inp2;
     char* token;
-    char** command = malloc(sizeof(char*)*2);
+    //char** command = malloc(sizeof(char*)*2);
+    char** command = calloc(2, sizeof(char*));
     for(int i = 0; i < 2; i++){
         token = multi_tok(temp, " ");
         temp = NULL;
