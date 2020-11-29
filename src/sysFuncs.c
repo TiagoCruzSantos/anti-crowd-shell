@@ -37,8 +37,7 @@ void backgroundProcesses(char** commands, TipoLista* procs){
             pids[i] = fork();
             if(pids[i] == 0){
                 if(commands[1] == NULL){ // Ignora SIGUSR1 caso seja o único processo
-                    struct sigaction sigusrIgn;
-                    sigusrIgn.sa_handler = SIG_IGN;
+                    struct sigaction sigusrIgn = {.sa_handler = SIG_IGN};
                     sigemptyset(&sigusrIgn.sa_mask);
                     sigaction(SIGUSR1, &sigusrIgn, NULL);
                 }
@@ -47,12 +46,13 @@ void backgroundProcesses(char** commands, TipoLista* procs){
                 }
                 exit(1);
             }else if(pids[i] > 0){
+                freeStringVec(cmd, 4);
             }else{
                 perror("Não foi possível criar novo processo");
             }
         }
-        struct sigaction acshTerm; // Adiciona tartador para o sinal SIGUSR2 que sera enviado pelo acsh após um exit
-        acshTerm.sa_handler = acshExited;
+        freeStringVec(commands, 5);
+        struct sigaction acshTerm = {.sa_handler = acshExited}; // Adiciona tartador para o sinal SIGUSR2 que sera enviado pelo acsh após um exit
         sigemptyset(&acshTerm.sa_mask);
         sigaction(SIGUSR2, &acshTerm, NULL);
         int status;
@@ -82,6 +82,7 @@ void backgroundProcesses(char** commands, TipoLista* procs){
         exit(0);
     }else if(pidM > 0){
         Insere(pidM, procs);
+        freeStringVec(commands, 5);
     }
 }
 
@@ -99,8 +100,7 @@ void foregroundProcess(char* commands){
         exit(1);
     }else{
         setHandler(SIG_IGN); // Ignora os sinais SIGINT, SIGQUIT e SIGTSTP enquanto o processo em foreground estiver ativo
-        struct sigaction chlTerm;
-        chlTerm.sa_handler = SIG_DFL;
+        struct sigaction chlTerm = {.sa_handler = SIG_DFL};
         sigemptyset(&chlTerm.sa_mask);
         sigaction(SIGCHLD, &chlTerm, NULL);
         waitpid(pid, NULL, 0);
@@ -112,13 +112,16 @@ void foregroundProcess(char* commands){
 }
 void internalCommand(char** command, TipoLista* listaDeProcessos){
     if(strcmp(command[0], internal[0]) == 0){
+        freeStringVec(command, 2);
         if(chdir(command[1]) < 0){
             perror("Não foi possível mudar de diretório");
         }
     }else if(strcmp(command[0], internal[1]) == 0){
+        freeStringVec(command, 2);
         while(!Vazia(listaDeProcessos)){
             kill(RetiraPrimeiro(listaDeProcessos), SIGUSR2);
         }
+        LiberaLista(listaDeProcessos);
         exit(0);
     }
 }

@@ -10,8 +10,7 @@
 int main(){
     childExited = 0;
     setHandler(handleSignal);
-    struct sigaction chlTerm;
-    chlTerm.sa_handler = chldTerm; // Adiciona tratador para esperar um filho que tenha acabado
+    struct sigaction chlTerm = {.sa_handler = chldTerm}; // Adiciona tratador para esperar um filho que tenha acabado
     sigemptyset(&chlTerm.sa_mask);
     sigaction(SIGCHLD, &chlTerm, NULL);
     TipoLista* ListaProcessos = CriaLista();
@@ -23,6 +22,8 @@ int main(){
         while(getlineRes <= 1){
             if(!childExited){ // Evita printar acsh> mais uma vez caso um filho em background tenha terminado
                 printf("acsh>");
+                free(line);
+                line = NULL;
             }else{
                 childExited = 0;
             }
@@ -36,17 +37,19 @@ int main(){
         trimRight(line);
         char** cmd = divideCmd(line);
         if(isInternal(cmd[0])){
+            free(line);
             internalCommand(cmd, ListaProcessos);
             continue;
         }
         freeStringVec(cmd, 2);
         cmd = divideExtCmds(line);
+        free(line);
         if(cmd[0][strlen(cmd[0]) - 1] == '%'){
             foregroundProcess(cmd[0]);
+            freeStringVec(cmd, 5);
         }else{
             backgroundProcesses(cmd, ListaProcessos);
         }
-        free(line);
     }
 
     return 0;

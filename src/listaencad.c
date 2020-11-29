@@ -167,4 +167,5 @@ void LiberaLista(TipoLista *Lista)
         Lista -> Primeiro = Lista -> Primeiro -> prox;
         LiberaCelula(AuxDestruidor);
     }
+    free(Lista);
 }

@@ -114,7 +114,9 @@ char** divideCmd(char* input){
 
 void freeStringVec(char** vec, int size){
     for(int i = 0; i < size; i++){
-        free(vec[i]);
+        if(vec[i] != NULL){
+           free(vec[i]); 
+        }
     }
     free(vec);
 }
