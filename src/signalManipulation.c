@@ -2,7 +2,7 @@
 
 void chldTerm(int i){
     if(i == SIGCHLD){
-        waitpid(-1, NULL, WNOHANG);
+        waitpid(-1, NULL, WNOHANG); // espera o processo intermediario que enviou o SIGCHLD
         childExited = 1;
     }
 }

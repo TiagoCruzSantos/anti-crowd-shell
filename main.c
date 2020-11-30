@@ -32,7 +32,7 @@ int main(){
                 clearerr(stdin);
             }
         }
-        line[strlen(line) - 1] = '\0';
+        line[strlen(line) - 1] = '\0';// retira o \n que o getline adiciona
         trimLeft(line);
         trimRight(line);
         char** cmd = divideCmd(line);
@@ -44,7 +44,7 @@ int main(){
         freeStringVec(cmd, 2);
         cmd = divideExtCmds(line);
         free(line);
-        if(cmd[0][strlen(cmd[0]) - 1] == '%'){
+        if(cmd[0][strlen(cmd[0]) - 1] == '%'){ // Verifica se existe um % no final do primeiro comando
             foregroundProcess(cmd[0]);
             freeStringVec(cmd, 5);
         }else{
